@@ -1,0 +1,27 @@
+{% extends 'expenses/base.html' %}
+{% block title %}Settings · Smart Spend{% endblock %}
+{% block content %}
+<div class="auth-wrap" style="margin-top:4vh;">
+  <div class="card">
+    <div class="card-head"><span class="card-title"><i class="ti ti-settings text-accent" aria-hidden="true"></i> Financial settings</span></div>
+    <form method="POST" class="stack" style="gap:14px;">
+      {% csrf_token %}
+      <div><label class="field">Monthly income</label><input class="input" type="number" step="0.01" name="income" value="{{ profile.monthly_income }}" required></div>
+      <div><label class="field">Monthly budget</label><input class="input" type="number" step="0.01" name="budget" value="{{ profile.monthly_budget }}" required></div>
+      <div><label class="field">Display currency</label>
+        <select class="input" name="currency">
+          {% for code, label in currency_choices %}
+            <option value="{{ code }}" {% if profile.currency == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin:0;">Currency changes how amounts are displayed. No conversion is applied to stored values.</p>
+      <p class="muted" style="font-size:12.5px;margin:0;"><i class="ti ti-sparkles" aria-hidden="true"></i> AI provider: <strong>{{ ai_label }}</strong>. Set it in <code>.env</code>.</p>
+      <div class="flex gap-12" style="margin-top:6px;">
+        <button class="btn btn-primary" type="submit">Save settings</button>
+        <a href="{% url 'monthly_report' %}" class="btn btn-ghost">Add income</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

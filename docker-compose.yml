@@ -1,0 +1,27 @@
+# docker compose up --build           -> app on http://localhost:8004 (AI off unless .env sets a provider)
+# docker compose --profile ai up      -> also starts Ollama; then: docker compose exec ollama ollama pull qwen2.5vl:3b
+services:
+  web:
+    build: .
+    ports:
+      - "8004:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-change-me-in-env}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      DJANGO_SECURE_SSL_REDIRECT: "False"
+    volumes:
+      - data:/data
+
+  ollama:
+    image: ollama/ollama:0.5.7
+    profiles: ["ai"]
+    volumes:
+      - ollama:/root/.ollama
+
+volumes:
+  data:
+  ollama:

@@ -1,0 +1,19 @@
+{% extends 'expenses/base.html' %}
+{% block title %}Log in · Smart Spend{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-mark"><i class="ti ti-wave-sine" aria-hidden="true"></i></div>
+    <h2 style="text-align:center;margin-bottom:6px;">Welcome back</h2>
+    <p class="muted" style="text-align:center;margin:0 0 22px;font-size:14px;">Log in to your Smart Spend account</p>
+    {% for message in messages %}<div class="toast error" style="position:static;margin-bottom:14px;">{{ message }}</div>{% endfor %}
+    <form method="POST" action="{% url 'login' %}" class="stack" style="gap:14px;">
+      {% csrf_token %}
+      <div><label class="field">Email</label><input class="input" type="email" name="email" placeholder="name@example.com" required></div>
+      <div><label class="field">Password</label><input class="input" type="password" name="password" placeholder="Your password" required></div>
+      <button class="btn btn-primary btn-full" type="submit">Log in</button>
+    </form>
+    <p class="muted" style="text-align:center;font-size:13.5px;margin-top:18px;">No account? <a href="{% url 'signup' %}" class="text-accent">Sign up</a></p>
+  </div>
+</div>
+{% endblock %}

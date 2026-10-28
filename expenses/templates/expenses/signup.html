@@ -1,0 +1,33 @@
+{% extends 'expenses/base.html' %}
+{% block title %}Sign up · Smart Spend{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-mark"><i class="ti ti-wave-sine" aria-hidden="true"></i></div>
+    <h2 style="text-align:center;margin-bottom:6px;">Create your account</h2>
+    <p class="muted" style="text-align:center;margin:0 0 22px;font-size:14px;">Start tracking in under a minute</p>
+    {% for message in messages %}<div class="toast error" style="position:static;margin-bottom:14px;">{{ message }}</div>{% endfor %}
+    <form method="POST" action="{% url 'signup' %}" class="stack" style="gap:14px;">
+      {% csrf_token %}
+      <div><label class="field">Email</label><input class="input" type="email" name="email" placeholder="name@example.com" required></div>
+      <div class="input-row">
+        <div style="flex:1;"><label class="field">Monthly income</label><input class="input" type="number" step="0.01" name="income" placeholder="6000" required></div>
+        <div style="flex:1;"><label class="field">Monthly budget</label><input class="input" type="number" step="0.01" name="budget" placeholder="4000" required></div>
+      </div>
+      <div><label class="field">Currency</label>
+        <select class="input" name="currency">
+          <option value="USD">US Dollar ($)</option>
+          <option value="JOD">Jordanian Dinar (JD)</option>
+          <option value="SAR">Saudi Riyal (SR)</option>
+        </select>
+      </div>
+      <div class="input-row">
+        <div style="flex:1;"><label class="field">Password</label><input class="input" type="password" name="password" required></div>
+        <div style="flex:1;"><label class="field">Confirm</label><input class="input" type="password" name="confirm_password" required></div>
+      </div>
+      <button class="btn btn-primary btn-full" type="submit">Create account</button>
+    </form>
+    <p class="muted" style="text-align:center;font-size:13.5px;margin-top:18px;">Already have an account? <a href="{% url 'login' %}" class="text-accent">Log in</a></p>
+  </div>
+</div>
+{% endblock %}

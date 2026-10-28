@@ -1,0 +1,30 @@
+[project]
+name = "smart-spend"
+version = "2.0.0"
+description = "Personal finance tracker with explainable insights and optional hosted or local AI."
+requires-python = ">=3.11"
+license = "MIT"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["expenses/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "S", "SIM"]
+ignore = ["S101", "S308", "S310", "B904", "E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"expenses/tests.py" = ["S105", "S106", "S107"]
+"expenses/management/commands/seed_demo.py" = ["S105", "S311"]
+"smart_spend/settings.py" = ["S105"]
+"scripts/*" = ["S"]
+
+[tool.coverage.run]
+source = ["expenses", "smart_spend"]
+omit = ["*/migrations/*", "*/asgi.py", "*/wsgi.py", "manage.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 85

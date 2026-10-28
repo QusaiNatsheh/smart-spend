@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Spend{% endblock %}</title>
+    <script>
+      (function () {
+        var m = document.cookie.match(/(?:^|; )theme=([^;]+)/);
+        if (m) document.documentElement.setAttribute("data-theme", m[1]);
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css" rel="stylesheet">
+    <link href="{% static 'expenses/css/app.css' %}" rel="stylesheet">
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<nav class="nav">
+  <div class="shell nav-inner">
+    <a href="{% url 'dashboard' %}" class="brand">
+      <span class="brand-mark"><i class="ti ti-wave-sine" aria-hidden="true"></i></span> Smart Spend
+    </a>
+    <div class="nav-links">
+      <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="{% url 'all_transactions' %}" class="hide-sm {% if request.resolver_match.url_name == 'all_transactions' %}active{% endif %}">Transactions</a>
+      <a href="{% url 'insights' %}" class="{% if request.resolver_match.url_name == 'insights' %}active{% endif %}">Insights</a>
+      <a href="{% url 'monthly_report' %}" class="hide-sm {% if request.resolver_match.url_name == 'monthly_report' %}active{% endif %}">Report</a>
+      <a href="{% url 'settings' %}" class="hide-sm {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">Settings</a>
+      <button class="icon-btn" onclick="openPalette()" aria-label="Open command palette" title="Command palette (Ctrl/⌘K)"><i class="ti ti-command" aria-hidden="true"></i></button>
+      <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme"><i id="theme-icon" class="ti ti-sun" aria-hidden="true"></i></button>
+      <form action="{% url 'logout' %}" method="POST" style="display:inline;">{% csrf_token %}<button class="icon-btn" type="submit" aria-label="Log out" title="Log out"><i class="ti ti-logout" aria-hidden="true"></i></button></form>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<main class="page">
+  <div class="shell">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+{% if messages %}
+<div class="toasts" aria-live="polite">
+  {% for message in messages %}
+    <div class="toast {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<script>
+  (function () {
+    var m = document.cookie.match(/(?:^|; )theme=([^;]+)/);
+    var icon = document.getElementById("theme-icon");
+    if (icon && m && m[1] === "light") icon.className = "ti ti-moon";
+  })();
+</script>
+<script src="{% static 'expenses/js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

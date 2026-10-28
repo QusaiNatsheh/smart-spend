@@ -1,0 +1,26 @@
+{% extends 'expenses/base.html' %}
+{% block title %}Edit expense · Smart Spend{% endblock %}
+{% block content %}
+<div class="auth-wrap" style="margin-top:4vh;">
+  <div class="card">
+    <div class="card-head"><span class="card-title"><i class="ti ti-edit text-accent" aria-hidden="true"></i> Edit expense</span></div>
+    <form method="POST" class="stack" style="gap:14px;">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div><label class="field">Description</label><input class="input" type="text" name="title" value="{{ expense.title }}" required></div>
+      <div class="input-row">
+        <div style="flex:1;"><label class="field">Amount</label><input class="input" type="number" step="0.01" min="0.01" name="amount" value="{{ expense.amount }}" required></div>
+        <div style="flex:1;"><label class="field">Date</label><input class="input" type="date" name="date" value="{{ expense.date|date:'Y-m-d' }}" required></div>
+      </div>
+      <div><label class="field">Category</label><input class="input" type="text" name="category" list="category-list" value="{{ expense.category.name|default:'' }}" required>
+        <datalist id="category-list">{% for c in categories %}<option value="{{ c }}">{% endfor %}</datalist>
+      </div>
+      <div><label class="field">Notes</label><textarea class="input" name="notes" rows="2">{{ expense.notes }}</textarea></div>
+      <div class="flex gap-12" style="margin-top:6px;">
+        <button class="btn btn-primary" type="submit">Save changes</button>
+        <a href="{{ next|default:'/transactions/' }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

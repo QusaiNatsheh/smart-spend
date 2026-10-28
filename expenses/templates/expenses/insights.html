@@ -1,0 +1,69 @@
+{% extends 'expenses/base.html' %}
+{% load money %}
+{% block title %}Insights · Smart Spend{% endblock %}
+{% block content %}
+<div class="stack">
+  <div><h1 class="page-title">Insights</h1><p class="muted" style="margin:0;">Computed from your own spending, without AI. Every flag says why.</p></div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-head"><span class="card-title"><i class="ti ti-radar text-accent" aria-hidden="true"></i> Anomaly radar</span></div>
+      {% for a in anomalies %}
+        <div class="flex between items-center" style="padding:11px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:14px;">{{ a.expense.title }}</div>
+            <div class="muted" style="font-size:12.5px;">{{ a.expense.date|date:"M j" }} · {{ a.reason }}</div>
+          </div>
+          <div class="num text-danger" style="font-weight:600;">{{ a.expense.amount|money:currency }}</div>
+        </div>
+      {% empty %}
+        <div class="empty"><i class="ti ti-shield-check" aria-hidden="true"></i>Nothing unusual. Your spending looks consistent.</div>
+      {% endfor %}
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-title"><i class="ti ti-repeat text-accent" aria-hidden="true"></i> Recurring spend</span>{% if recurring %}<span class="num muted" style="font-size:13px;">~{{ recurring_monthly|money:currency }} / month</span>{% endif %}</div>
+      {% for r in recurring %}
+        <div class="flex between items-center" style="padding:11px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:14px;">{{ r.title }}</div>
+            <div class="muted" style="font-size:12.5px;">{{ r.category }} · {{ r.cadence }} · {{ r.occurrences }} payments · next ~{{ r.next_expected|date:"M j" }}</div>
+          </div>
+          <div class="num" style="font-weight:600;">{{ r.typical_amount|money:currency }}</div>
+        </div>
+      {% empty %}
+        <div class="empty"><i class="ti ti-repeat-off" aria-hidden="true"></i>No recurring pattern detected yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title"><i class="ti ti-target text-accent" aria-hidden="true"></i> Category budgets</span></div>
+    {% for b in budgets %}
+      <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+        <div class="flex between items-center mb-8">
+          <span>{{ b.category }} {% if b.over %}<span class="pill warn" style="margin-left:6px;">over</span>{% elif b.warning %}<span class="pill warn" style="margin-left:6px;">close</span>{% endif %}</span>
+          <span class="flex items-center gap-12">
+            <span class="num muted" style="font-size:13px;">{{ b.spent|money:currency }} / {{ b.limit|money:currency }}</span>
+            <form action="{% url 'delete_category_budget' b.id %}" method="POST" style="display:inline;" onsubmit="return confirm('Remove this category budget?');">{% csrf_token %}<button class="row-actions" style="opacity:1;background:none;border:none;cursor:pointer;color:var(--text-muted);" title="Remove"><i class="ti ti-x" aria-hidden="true"></i></button></form>
+          </span>
+        </div>
+        <div class="bar {% if b.over %}over{% elif b.warning %}warn{% endif %}"><span style="width:{{ b.pct }}%"></span></div>
+      </div>
+    {% empty %}
+      <p class="muted" style="font-size:14px;">No category budgets yet. Set one below to get over-spend alerts.</p>
+    {% endfor %}
+
+    <form action="{% url 'set_category_budget' %}" method="POST" class="input-row mt-24" style="margin-top:18px;align-items:flex-end;flex-wrap:wrap;">
+      {% csrf_token %}
+      <div style="flex:2;min-width:160px;"><label class="field">Category</label>
+        <select class="input" name="category" required>
+          {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% empty %}<option disabled>Add an expense first</option>{% endfor %}
+        </select>
+      </div>
+      <div style="flex:1;min-width:120px;"><label class="field">Monthly limit</label><input class="input" type="number" step="0.01" name="monthly_limit" placeholder="300" required></div>
+      <button class="btn btn-primary" type="submit">Set budget</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

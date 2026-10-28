@@ -1,0 +1,25 @@
+{% extends 'expenses/base.html' %}
+{% block title %}Import CSV · Smart Spend{% endblock %}
+{% block content %}
+<div class="auth-wrap" style="margin-top:4vh;">
+  <div class="card">
+    <div class="card-head"><span class="card-title"><i class="ti ti-upload text-accent" aria-hidden="true"></i> Import expenses</span></div>
+    <p class="muted" style="font-size:13.5px;margin-top:0;">Upload a UTF-8 CSV with the columns <code>date, title, amount, category, notes</code> (<code>title</code> and <code>amount</code> are required; dates are <code>YYYY-MM-DD</code>). Every row is checked first: if any row has a problem, nothing is imported and each problem is listed by line.</p>
+    {% if errors %}
+      <div class="import-errors" role="alert">
+        <strong><i class="ti ti-alert-triangle" aria-hidden="true"></i> Nothing was imported. {{ error_count }} problem{{ error_count|pluralize }} found:</strong>
+        <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% if error_count > errors|length %}<p class="muted">Showing the first {{ errors|length }}.</p>{% endif %}
+      </div>
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data" class="stack" style="gap:14px;">
+      {% csrf_token %}
+      <input class="input" type="file" name="csv_file" accept=".csv,text/csv" required>
+      <div class="flex gap-12">
+        <button class="btn btn-primary" type="submit">Import</button>
+        <a href="{% url 'all_transactions' %}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
